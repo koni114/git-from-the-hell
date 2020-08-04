@@ -264,7 +264,6 @@ git branch -d exp
 git checkout -b iss53 
 ~~~
 - iss53이라는 branch 생성과 동시에 checkout  
-![img](https://github.com/koni114/Linux_lifeCoding/blob/master/shell_kernel.JPG)
 
 - fast forward(빨리 감기)  
   - master branch에서 hotfix가 독립한 이후에, master branch는 어떠한 commit도 만들지 않음  
@@ -368,5 +367,88 @@ git stash list
 ## chapter28 - reset checkout
 - checkout을 통해 과거로 돌아가는법을 알아보자.
 - ex) 내가 version 3에 해당되는 commit으로 돌아가고 싶다면? 
-  - git reset --hard "commit id 명"
+~~~
+git reset --hard "version 3에 해당하는 commit id 명"
+~~~
+
+- 해당 명령어를 내렸을 때, 어떤 변화가 있는지 살펴보자
+  - refs/headers/master file이 수정  
+    version 3의 commit이 master로 되어 있음
+- reset을 한다는 것은 checkout 이 가리키고 있는 최신 commit을 바꾸는 행위
+- 만약 reset을 취소하고 싶다면?
+  - ORIG_HEAD file : 우리가 삭제한 4번을 가리키고 있음  
+  git은 위험한 명령을 내렸을 때 해당 file에 기록을 해둠
+  - logs/refs/headers/master : 우리가 삭제한 commit id가 최신 commmit id가 되었다는 history 정보가 담겨있음
+
+- 그렇다면, reset 명령어를 취소해보자
+~~~
+git reset --hard ORIG_HEAD 
+~~~
+- log에는 ORIG_HEAD 보다 log에 더 자세한 정보가 담겨있음
+~~~
+git reflog
+~~~
+- 내가 했던 행위들의 log가 기록되어 있음
+- 내가 만약 reset을 취소하려면, log 정보의 code나 Head@{n}를 이용하면됨
+- git commit 명령어 뒤에 commit id를 붙일 수도 있음
+~~~
+git commit [commit id명] # HEAD file에는 commit id가 직접 작성됨
+git checkout master # HEAD file에는 ref directory가 작성됨
+~~~
+- HEAD의 commit id가 바뀌었음을 확인 가능
+- HEAD file에는 commit id가 직접 적혀있음. --> detached 된 상태
   
+## chapter29 - GIT_원리: working copy&index&repository
+- git reset 명령시 option은 여러가지가 있음
+- reset의 option(hard, mixed, soft)들은 어떤 의미를 가지는 것인지를 먼저 살펴보자
+ ![img](https://github.com/koni114/git-from-the-hell/blob/master/img/reset.JPG)
+  - git reset --soft : repository 에 있는 내용만 reset
+  - git reset --index : repository, index에 있는 내용만 reset
+  - git reset --hard : repository, index, working tree에 있는 내용 모두 reset
+- 개념만 확실히 인지하고, 익숙한 것 하나만 사용하면 됨
+- 가장 중요한 것은 working copy vs index vs repository 간의 관계는 매우 중요!
+
+## chapter30 - GIT_원리: merge & conflict
+- conflict라는 현상이 발생했을 때, git은 내부적으로 어떤 일을 하는지 알아보자
+- conflict를 해결하는 방법인 3-way merge 기법이 어떻게 동작하는지도 알아보자
+~~~
+# exp 라는 branch를 만들고, master와 exp에 동일한 소스 내용을 각각 다르게 수정
+git init
+vim text.txt # 해당 text file 생성
+git commit -am "1"
+
+git branch exp
+vim text.txt # 해당 text file 수정
+git commit -am "common -> exp"
+
+git branch master
+vim text.txt # 해당 text file 수정
+git commit -am "common -> master"  
+
+git merge exp # auto merge error
+~~~
+* 이런 충돌이 일어날 때 git에서는 어떤 일이 일어나는지 확인해보자
+* index file 살펴보기
+  * 1,2,3 이라는 숫자가 붙은 t1.txt file을 볼 수 있는데  
+  각 내용을 확인해보면  
+  1 --> common  
+  2 --> master  
+  3 --> exp  
+  로 구성되어 있음. 이를 통해 3-way merge 방법이 이루어짐
+* 3개의 종류에 따라 git은 자동으로 병합 작업을 수행
+* MERGE_HEAD : merge가 될 대상의 최신 commit
+* ORIG_HEAD  : merge 이전으로 돌아가기 위한 file 
+* 충돌이 일어난 file에 대한 내용이 적혀있음
+
+* 병합을 전문적으로 해주는 도구를 사용해보자  
+--> kdiif3 라는 open source
+  * 화면에서 A,B,C 중 하나를 선택하거나, 수정하여 저장할 수 있게 함
+  * file이 자동으로 'add' 됨
+  * f1.txt.orig file이 자동으로 생성되는데, 지우면 됨
+~~~
+git config --global merge.tool kdiff3 # setting 방법은 운영체제마다 다름
+git mergetool # 충돌난 file에 대해서 merge tool을 이용해서 병합하도록 명령
+~~~
+
+
+
