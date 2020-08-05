@@ -452,7 +452,7 @@ git mergetool # 충돌난 file에 대해서 merge tool을 이용해서 병합하
 
 ## chapter31 - GIT_원리: 3 way merge
 - 이미지 참고
-![img](https://github.com/koni114/git-from-the-hell/blob/master/img/workspace_repository.png)
+![img](https://github.com/koni114/git-from-the-hell/blob/master/img/3_way_merge.JPG)
 - merge방법에는 2-way merge 방법과 3-way merge 방법이 존재
   - 2-way : base를 제외한 Me와 Other만 비교
   - 3-way : base, Me, Other 3개를 비교
@@ -467,3 +467,142 @@ git mergetool # 충돌난 file에 대해서 merge tool을 이용해서 병합하
 - 만약 혼자 project를 진행한다면, dropbox나 google drive를 사용하면 됨.
 
 ## chapter33 - 원격 저장소 생성
+- 원격 저장소 생성 방법에 대해 알아보자
+- 일단, 혼자 project 하는 것 처럼 해보자
+~~~
+git init local # local 이라는 이름의 저장소 생성
+cd local       # local로 이동
+
+vim f1.txt
+git commit am "1"
+~~~
+- 실제로 인터넷에 원격 저장소를 생성하는 것은 다소 복잡하기도 하고,  
+이 복잡성 때문에 응용력이 떨어질 수 있으므로  
+한 대의 컴퓨터 안에서 다른 디렉토리 안에다가 원격 저장소를 만들고  
+원격 저장소에 commit 하는 예제를 진행해보자
+
+~~~
+cd .. 
+git init --bare remote # bare는 작업을 할수 없고 저장소의 기능만 할 수 
+                       # 있는 저장소를 만드는 옵션 
+                       # remote directory가 생성됨
+~~~
+- bare 명령어를 사용하여 directory를 생성하면 .git 디렉토리에  
+있던 파일들이 전부 들어가 있는 것을 확인 가능
+- 내가 직접 원격 저장소를 만들 때는 반드시 bare 명령어를 붙여야 함
+- 어떠한 작업도 하지 못하게 하기 위함
+- 원격 저장소를 만들때는 bare를 넣는다! 라고 생각하자
+- local 에서 remote라는 원격 저장소에 local 저장소의 내용을 저장해보자
+~~~
+cd local
+git remote add origin "원격 저장소 경로" # origin은 항상 경로를 치기 귀찮기  
+                                         # 때문에 alias 같은 개념
+git remote -v # origin 이라고 하는 별명은 해당 저장소 이다! 라는 의미
+git push  
+~~~
+- git push 명령어를 수행하면, matching 방식과 simple 방식에 대한 message가 나옴
+  - matching : git이 암시적으로 알아서 해줌 
+  - simple : 사용자가 지정해서 어디서 어디로 push 하겠다는 option
+- 새버전부터는 matching 방식에서 simple 방식으로 변경됨
+- 우리는 쉽게 simple 방식으로 한다고 생각하면 됨!
+~~~
+git config --global push.default simple
+git push 
+~~~
+- git push --set -upstream origin master 라는 메세지가 뜨는데,  
+  origin 이라는 directory에 master branch로 upload 했다는 의미!
+- --set upstream 은 앞으로 git push를 할 경우 자동으로 origin master로 push 하겠다는 의미
+
+## chapter34 - GitHub 소개
+- 원격저장소를 제공해주는 여러가지 서비스가 있음  
+가장 유명한 www.github.com 이 있음
+- 이미 존재하는 project를 끌고와서 사용하는 방법을 알아보자
+- github.com/git/git 의 메인화면 분석
+
+- contributor : 이 소스코드에 접근 가능한 인원을 말함
+- Fork : 해당 버튼을 누르면 해당 project가 나의 것이 됨  
+  내가 마음대로 수정 가능하게 됨(단 복제된 소스코드를 말함)
+  license에 따라 수정 가능할 수도 아닐 수도 있음!
+  fork 옆에 있는 숫자는 복제해 간 project의 수
+  자신에 대한 평판을 의미하기도 함
+- 개발자들의 open source의 문화의 한 측면이라고 볼 수 있음
+- git의 원격 저장소에서 local 저장소로 source 복사하기
+~~~
+git clone "원격 저장소 URL" "복사하고자 하는 directory 경로"
+~~~
+- 로그인이 필요없이 clone이 가능
+
+## chapter35 - 원격 저장소 만들기(Github)
+- 내가 로컬에서 작성한 소스를 a라는 원격 저장소, b라는 원격 저장소에  
+  각각 전송할 수 있음
+- 예시
+~~~
+git remote add origin https://github.com/koni114/git
+git remote add friend https://github.com/koni114/git2
+~~~
+- 일반적으로 기본 원격저장소 명은 'origin'으로 사용
+- 다시 friend 삭제
+~~~
+git remote remove friend
+~~~
+
+- 로컬 저장소 입장에서 원격 저장소로 보낼때, push 사용
+- -u는 한번만 쓰면 됨
+
+
+## chapter36 - 동기화 방법(Github)
+- 하나의 원격 저장소를 중심으로 두 개의 지역 저장소를 동기화 하는 방법
+  - 여러 대의 컴퓨터를 쓰는 경우
+  - 협업을 하는 경우
+- 원격 저장소 자원을 두 개의 로컬 저장소로 만들어 보자
+~~~
+git clone https://github.com/koni114/git git_home
+git clone https://github.com/koni114/git git_office
+~~~
+
+- commit message 를 변경하고 싶은 경우,
+~~~
+git commit --amend
+~~~
+
+- 지역 저장소 입장에서 원격 저장소를 가져오고 싶으면,
+~~~
+git pull
+~~~
+
+## chapter37 - ssh를 이용해서 로그인없이 원격 저장소 사용하기 (Github)
+- ssh : Secure Shell
+- github은 HTTPS 와 Use SSH 두 개의 option을 제공하고 있음
+- HTTPS는 복잡한 개념이나 뭘 입력하지 않아도 push할 수 있음  
+  push할 때마다 id와 password를 입력해야 함
+- ssh라는 다른 통신방법을 이용해서  
+  할 때마다 로그인하지 않고 전송하는 방법을 알아보자
+- 실제로 ssh는 자동으로 로그인을 해주는 것이지 ssh와 https는 동일한 level의 통신 방법이라는 것을 잊지 말자
+
+~~~
+ssh-keygen # 입력 후 경로를 잘 기억
+           # 계속 엔터를 치면 ssh를 통해서 다른 컴퓨터로 접속할 수 있는  
+           # 비밀번호가 생김  
+           # 기계적으로 굉장히 복잡한 비밀번호가 생김
+~~~
+- 두 개의 파일이 생성됨
+  - id_rsa : private key. 비공개된 정보가 들어있다
+  - id_rsa.pub : public key. 공개된 정보가 들어있다
+- ssh 통신을 할 때는 private key는 내 컴퓨터에 저장되고, public key는  
+  내가 접속하고자 하는 컴퓨터에 일정한 디렉토리에 넣어주면 됨  
+- 이렇게 되면 id_rsa 파일이 들어있는 컴퓨터에서 id_rsa.pub 라는 파일이 설치된  
+컴퓨터로 접속할 때, 아이디 비밀번호를 치지 않아도 접속이 가능
+- private key는 절대로 노출되면 안됨
+- 서버 컴퓨터에 id_rsa.pub file을 어떠한 규칙에 따라서 저장만 해주면 됨  
+우리가 사용하고 하는 원격 저장소는 github를 사용하고 있기 때문에  
+ssh public key를 저장하면 됨
+
+- 설정 예시
+  - github.com site에서 settings -> SSH and GPG keys 클릭
+  - 여기서 public key를 등록할 수 있음
+  - title에는 지역 저장소 이름 작성
+  - copy한 값을 Key에 넣어줌
+  - 등록 완료
+- 이 행위는 Web을 통해서 github에 public key를 저장해 둔 것임
+-  
+  
