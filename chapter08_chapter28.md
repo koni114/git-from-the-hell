@@ -450,5 +450,20 @@ git config --global merge.tool kdiff3 # setting 방법은 운영체제마다 다
 git mergetool # 충돌난 file에 대해서 merge tool을 이용해서 병합하도록 명령
 ~~~
 
+## chapter31 - GIT_원리: 3 way merge
+- 이미지 참고
+![img](https://github.com/koni114/git-from-the-hell/blob/master/img/workspace_repository.png)
+- merge방법에는 2-way merge 방법과 3-way merge 방법이 존재
+  - 2-way : base를 제외한 Me와 Other만 비교
+  - 3-way : base, Me, Other 3개를 비교
+- 3-way merge같은 경우는 내가 수정하지 않고 다른 사람이 수정했을 경우는 충돌 안남!
 
+## chapter32 - 원격 저장소
+- remote repository라고 함 
+- local repository랑은 대비되는 개념
+- 원격 저장소는 중요한 두가지 개념을 가짐
+  - 내 버전을 백업함
+  - 다른사람과 협업을 함
+- 만약 혼자 project를 진행한다면, dropbox나 google drive를 사용하면 됨.
 
+## chapter33 - 원격 저장소 생성
