@@ -229,12 +229,12 @@ git branch --graph
   - 현재 디렉토리의 저장소가 sourcetree GUI tool로 실행됨.
   - command line 에서 확인하기 힘든 graph 를 GUI로 잘 보여줌~
 ~~~
-git log master..exp
+git diff master..exp
 ~~~
 - version 과 version 사이의 차이 확인  
 - master에는 있고, exp는 없는 차이를 확인 가능.
 ~~~
-git log master..exp -p
+git diff master..exp -p
 ~~~
 
 - -p를 붙이면 source code의 차이를 알 수 있음.
@@ -330,7 +330,10 @@ git stash list
 - git stash drop --> 가장 최신 stash가 삭제됨.  
 - ; 를 붙이면 command line 을 한줄에 여러개 사용 가능.  
 
-- git stash pop --> apply + drop 까지 되는 명령어!  
+~~~
+git stash pop
+~~~
+- apply + drop 까지 되는 명령어!  
 - git stash 라는 명령어는 최소한 version 관리가 되고 있는 파일에 한해서만 적용됨.  
   즉 working directory 에 file이 올라와 있어야함(add)
 
@@ -378,7 +381,7 @@ git reset --hard "version 3에 해당하는 commit id 명"
 - 만약 reset을 취소하고 싶다면?
   - ORIG_HEAD file : 우리가 삭제한 4번을 가리키고 있음  
   git은 위험한 명령을 내렸을 때 해당 file에 기록을 해둠
-  - logs/refs/headers/master : 우리가 삭제한 commit id가 최신 commmit id가 되었다는 history 정보가 담겨있음
+  - logs/refs/headers/master : 우리가 삭제한 commit id가 최신 commit id가 되었다는 history 정보가 담겨있음
 
 - 그렇다면, reset 명령어를 취소해보자
 ~~~
