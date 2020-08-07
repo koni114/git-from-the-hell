@@ -607,6 +607,3 @@ ssh public key를 저장하면 됨
   - copy한 값을 Key에 넣어줌
   - 등록 완료
 - 이 행위는 Web을 통해서 github에 public key를 저장해 둔 것임
-
-## chapter38 - 
-  
