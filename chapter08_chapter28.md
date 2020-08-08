@@ -588,6 +588,7 @@ ssh-keygen # 입력 후 경로를 잘 기억
            # 비밀번호가 생김  
            # 기계적으로 굉장히 복잡한 비밀번호가 생김
 ~~~
+
 - 두 개의 파일이 생성됨
   - id_rsa : private key. 비공개된 정보가 들어있다
   - id_rsa.pub : public key. 공개된 정보가 들어있다
@@ -607,3 +608,73 @@ ssh public key를 저장하면 됨
   - copy한 값을 Key에 넣어줌
   - 등록 완료
 - 이 행위는 Web을 통해서 github에 public key를 저장해 둔 것임
+
+## chapter38 - 자기 서버에 원격 저장소 만들기(My server)
+- 지역 저장소에서 원격 저장소를 생성한 후, 
+- 인터넷을 통하여 업로드 하는 방법, 내가 직접 구축한 서버, ssh로 통신하는 방법에 대해서 알아보자.
+- local computer vs 원격 저장소가 생성됨 컴퓨터 대기 
+
+
+1. 원격 저장소 저장소 생성
+~~~
+git init local
+vim f1.txt
+git add f1.txt
+git commit -m "1"
+git init --bare remote # remote라는 원격 저장소가 생성됨
+~~~
+ 
+2. 같은 컴퓨터가 아니라, 다른 컴퓨터에 있는 원격 저장소에 ssh 방법을 이용하여 접근
+~~~
+git remote add origin ssh://git@13.124.42.13/home/git/git/remote/
+git push
+git push --set-upstream origin master 
+~~~
+* 끝에다가 /를 붙이면 directory 안에 있는 내용이라는 의미  
+  따라서 반드시 붙여줘야함
+
+## chapter39 - pull & push(my server)
+- 두 대의 컴퓨터가 원격 저장소를 중심으로 주고 받는 방법을 알아보자
+~~~
+git pull 
+~~~
+- 원격 저장소의 내용을 지역 저장소로 땡겨올 때 사용하는 명령어
+- push를 하기 전에 반드시 pull을 해야함
+  집에서 작업을 하고 push 를 하고, 회사에서 pull을 안하고  
+  수정한 후 push를 하면 rejected 되었다고 확인 가능
+- git pull을 하는게 어떻겠냐고 hint를 주고 있음
+- 이 때 pull을 하면 작업한 내용과 merge가 됨
+- 병합 작업이 끝나면 다시 push 하면 됨
+- 분산 버전 관리 시스템 : 지역 저장소에서 버전을 가지고 있고, 원격 저장소로 동기화 시키는 시스템
+- 충돌이 났을 때 책임을 다른사람에게 넘기는 방법이, push를 자주 하는 것
+
+## chapter40 - 자동 로그인(My server)
+- 자동으로 로그인이 이루어지도록 하는 방법
+
+~~~
+cd ~ # .ssh 라는 directory가 보임
+mv .ssh .ssh_backup # 혹시 모르니까 백업 해둠
+ssh-keygen -t rsa   # t는 type을 의미하고, 이때 사용할 암호화 방식인 rsa 를 사용하겠다는 의미
+
+~~~
+- .ssh 라는 숨김 디렉토리가 보이는데,  
+  ssh 라는 방식을 통해 서버 컴퓨터를 원격 제어하는 필요한 정보들이 저장되어 있음
+- id_rsa , id_rsa_pub 는 일종의 비밀번호
+  우리가 다루는 서버는 보안이 굉장히 중요하고, server를 통해서 수많은 사람들이 영향을 받을 수 있으므로
+  보안이 굉장히 중요  
+  즉, keygen을 통해서 비밀번호가 들어있고 굉장히 복잡한 비밀번호가 들어있다고 생각하면 됨
+- id_rsa : 열쇠, id_rsa.pub : 자물쇠
+
+~~~
+# 원격 저장소
+mk .ssh
+~/.ssh vim authorized_keys # 해당 file에 rsa.pub 의 내용을 정확하게 저장
+                           # authorized_keys 라는 명칭은 약속된 이름
+
+# 더 쉽게 ssh.pub 등록하는 방법
+ssh-copy-id git@13.124.42.13
+~~~
+- id_rsa.pub은 전부 read권한이 있는데, id_rsa는 소유자에 대해서만 읽기와 쓰기가 있어야 함  
+  이것보다 더 많은 권한이 부여되어 있으면 읽히지 않을 것임.
+
+
