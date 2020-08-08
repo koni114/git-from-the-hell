@@ -637,7 +637,7 @@ git add f1.txt
 git commit -m "1"
 ~~~
  
-2. 원격 저장소 생성
+2. 원격 저장소 생성  
 ~~~
 git init --bare remote # remote 라는 원격 저장소가 생성됨
 ~~~
