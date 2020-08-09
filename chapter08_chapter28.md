@@ -911,7 +911,7 @@ git tag -a 1.1.3 -m "bug fix"
 
 * tag와 branch의 원리는 거의 동일하다는 것을 알 수 있음
 
-## chapter44 - Git - Rebase 1/3
+## chapter45 - Git - Rebase 1/3
 - rebase는 merge와 비슷하나 좀 더 어렵다  
   초심자라면 merge를 쓰는 것을 추천!  
 ![img](https://github.com/koni114/git-from-the-hell/blob/master/img/rebase.JPG)  
@@ -931,7 +931,7 @@ git rebase master
   base 뒤에 feature commit history가 붙는 개념
 - rebase는 비교적 어렵고, 복구가 어렵다
 
-## chapter44 - Git - Rebase 2/3
+## chapter46 - Git - Rebase 2/3
 - rebase 실습
 - 화면을 3개로 나눔
 ~~~
@@ -967,15 +967,57 @@ git checkout master
 git merge rb # fast-forward로 commit branch(HEAD)가 변경됨
 ~~~
 
+## chapter47 - Git - Rebase 3/3
+- rebase는 다른 사람들과 commit 하지 않은 상태에서 rebase 해야 함
+- 각각 같은 부분을 수정한 branch(master, rb)가 있다고 해보자  
+  merge를 하면 충돌이 날 것임  
+~~~
+git rebase master
+~~~
+- rebase를 하는 순간 임시저장소에 base source와 R1 source의 차이만을 저장한 fetch 내용을 저장
+- R1-R2, R2-R3의 fetch도 각각 저장
+- rebase 하는 순간, confilct가 났다는 메세지를 주면서 수정하라고 얘기함
+~~~
+git status # conflict 확인
+vim f1.txt # 충돌 난 부분을 수정
+git add .
+git status # 충돌 부분을 수정했으므로, git rebase --continue를 하라고 되어 있음
+git rebase --continue # R2와 충돌남
 
+vim f1.txt
+git add . 
+git rebase # R3와 충돌남
 
+vim f1.txt # 충돌 수정
+git add .
+git rebase --continue # rebase success
 
+git log --decorate --all --graph --oneline # 가지치기 없이 깔끔하게 보여준다는 것!
+~~~
+- 프로젝트의 복잡도에 따라서 적절한 도구를 사용하는 것이 중요함
 
+## chapter48 - Git을 이용한 프로젝트의 흐름(Git Flow) 1
+- git을 '잘' 사용하는 방법에 대한 가이드를 알아보자
+- 이것은 주관적이기 때문에 스스로 맥락적으로 채택할지, 하지 않을지 판단해라
+- 여러가지 모델중 git flow라는 모델을 소개  
+![img](https://github.com/koni114/git-from-the-hell/blob/master/img/git_flow.png)  
 
-
-
-
-
+- 가장 중요한 branch가 master와 develop branch
+- 두 개의 역할 분담을 하고 있는 것이 가장 중요한 포인트
+- master에서 파생된 develop이라는 branch에서 실질적으로 개발이 이루어짐
+- 특정한 기능을 개발해야 하는 경우가 생겼을 때, feature 라고 하는 branch 생성 후 개발
+- 만약 두 개의 기능을 만들어야 한다면, 2개의 feature로 시작하는 branch를 각각 만듬
+- feature 작업 한 내용을 다시 develop으로 병합
+- 어떤 특정한 속하지 않은 애매한 변경 사항들은(ex) bug) develop을 통해서 해나감
+- 사용자들에게 결과를 배포하는 것은 새로운 branch를 따는데 release 라는 branch로 만듬
+- release 이후에 발생하는 문서 업데이트, 버그 수정은 release branch 안에서 해나감
+- develop branch에 틈틈히 merge를 해서 적용
+- master branch에 병합하면서, tag라는 형식(기능)으로 기록함  
+  server다가 upload, 사용자가 download 한다거나..  
+- 결과적으로 master branch는 사용자에게 제공되는 프로그램, 또는 시스템 버전이 되는 것  
+- release branch는 master branch로도 병합되지만, 계속 개발을 해야하므로 develop branch로도 병합 됨  
+- hotfix는 긴급하게 버그가 생길 가능성을 염두한 branch  
+  문제 해결 후, master branch로 병합을 한 다음에 master branch에 버전을 기록하고 사용자들에게 제공  
 
 
 
