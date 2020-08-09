@@ -887,8 +887,85 @@ git push --tags # --tags option을 추가해야만 원격 저장소로 추가됨
 git tag -d 1.1.1
 ~~~
 
+## chapter44 - Git - tag 원리
+- tag 명령어를 통해서 tag를 주었을 때 어떤 변화가 있는지 확인해보자
 
+### light weighted tag
+- 하나의 파일만 바뀜
+  - refs/tags/1.1.2 : object id를 가지고 있음. -> commit message
+- 즉 tag를 준다는 것은 단순히 refs/tags 디렉토리 밑에 파일이 생성될 뿐이라는 것
+- 직접 tag를 만들 수도 있음
+~~~
+cd ./.git/refs/tags 
+vim 1.1.3.txt # 안에 commit id를 적으면 됨
+git tag       # 1.1.3 tag가 생성됨을 확인
+~~~
 
+### annotated tag
+~~~
+git tag -a 1.1.3 -m "bug fix"
+~~~ 
+* 2개의 파일이 생성
+  * object file : 특정한 object를 가리키고 있고, commit에 대한 object, tag설명 등..
+  * refs/tags/1.1.4 : annotated tag의 object file을 가리키고 있음
+
+* tag와 branch의 원리는 거의 동일하다는 것을 알 수 있음
+
+## chapter44 - Git - Rebase 1/3
+- rebase는 merge와 비슷하나 좀 더 어렵다  
+  초심자라면 merge를 쓰는 것을 추천!  
+![img](https://github.com/koni114/git-from-the-hell/blob/master/img/rebase.JPG)  
+- master branch에서 feature라는 branch를 생성    
+  그 후에 각각 commit을 한 상태   
+- rebase vs merge 공통점  
+  - feature와 master가 합쳤다는 것  
+- rebase vs merge 차이점  
+  - merge : 병렬로 존재. history를 알기가 어렵  
+  - rebase : 직렬로 존재. history가 알 수 있음  
+~~~
+git checkout feature
+git rebase master
+~~~
+- git rebase master 명령어를 수행하는 순간, master의 최신 commit이 base로 변환
+- feature branch의 commit history는 temp에 잠시 저장되고,  
+  base 뒤에 feature commit history가 붙는 개념
+- rebase는 비교적 어렵고, 복구가 어렵다
+
+## chapter44 - Git - Rebase 2/3
+- rebase 실습
+- 화면을 3개로 나눔
+~~~
+# 화면1
+
+git init .
+vim f1.txt
+git commit -am "1"
+git checkout -b rb
+
+vim re.txt
+git add re.txt
+git commit -am "R1"
+
+vim re.txt
+git commit -am "R2"
+
+git checkout master
+vim master.txt
+git add master.txt
+git commit -m "M1"
+
+vim master.txt # 수정
+git commit -am "M2"
+
+# rebase
+git checkout rb 
+git rebase master 
+git log --decorate --all --oneline --graph 
+# 조상이 달라짐을 확인!
+
+git checkout master
+git merge rb # fast-forward로 commit branch(HEAD)가 변경됨
+~~~
 
 
 
