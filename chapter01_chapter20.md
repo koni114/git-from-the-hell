@@ -1,4 +1,4 @@
-## chapter08_지옥에서 온 Git : 버전 만들기 (commit)
+## chapter08_지옥에서 온 Git : 버전 만들기(commit)
 - 모든 변화를 version이라고 하지 않음.
 - version은 의미있는 변화를 지칭함.
   - 내가 의미있는 변화라고 지정해 주어야함.(add)
